@@ -1,30 +1,26 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import sys, time, math, argparse
 from spherov2 import scanner
 from spherov2.sphero_edu import SpheroEduAPI
 from spherov2.types import Color
 from spherov2.commands.power import Power
 
-SEGMENTS_CM = [200, 200, 100, 100, 150, 100, 100, 200, 250]     # top →, right ↓, bottom ←, left ↑, finish →
-HEADINGS    = [  0,  90, 180, 270, 180,  90, 180, 270,   0]     # 0°=vers la droite
+SEGMENTS_CM = [200, 200, 100, 100, 150, 100, 100, 200, 250]     # afstand
+HEADINGS    = [  0,  90, 180, 270, 180,  90, 180, 270,   0]    # richting (graden)
 
-# Vitesse et modèle distance→temps
-SPEED_PCT_DEFAULT = 70                      # 0–100 (l’API mappe vers 0–255)
-CM_PER_SEC_DEFAULT = 41.7                   # à mesurer 1x sur ton sol à ta vitesse
+# SPEED + CM/S
+SPEED_PCT_DEFAULT = 70                     
+CM_PER_SEC_DEFAULT = 41.7                   
 
-# Douceur d’accélération/freinage (limite le patinage)
+# BRAKE
 RAMP = 0.35
 BRAKE = 0.20
 
-# LEDs
+# LED
 LED_READY = Color(0, 0, 255)
 LED_RUN   = Color(255, 120, 0)
 LED_OK    = Color(0, 255, 0)
 LED_ERR   = Color(255, 0, 0)
 
-# ===================== FONCTIONS =====================
 
 def find_toy(name_or_mac: str):
     toys = scanner.find_toys()
@@ -41,12 +37,12 @@ def print_battery(api, toy_name: str):
         v = Power.get_battery_voltage(api.toy)
         print(f"[{toy_name}] Battery: {v:.2f} V")
         if v <= 3.5:
-            print("⚠️  Batterie faible — charge avant les essais.")
+            print("Batterie LOW")
     except Exception:
         pass
 
 def gentle_roll(api: SpheroEduAPI, heading: int, speed_pct: int, seconds: float):
-    """Petite rampe d’accélération puis freinage actif pour réduire le dérapage."""
+    
     if seconds <= 0:
         return
     # ramp-up
@@ -60,7 +56,7 @@ def gentle_roll(api: SpheroEduAPI, heading: int, speed_pct: int, seconds: float)
     api.roll(heading, 0, BRAKE)
 
 def calibrate_zero(api: SpheroEduAPI):
-    print("🔧 Calibration: vise 0° dans la direction du PREMIER segment, puis ENTER …")
+    print("Calibration: 0° then ENTER")
     try:
         api.start_calibration()
     except Exception:
@@ -70,7 +66,7 @@ def calibrate_zero(api: SpheroEduAPI):
         api.finish_calibration()
     except Exception:
         api.set_heading(0)
-    print("✅ 0° fixé.\n")
+    print("0°\n")
 
 def run_lap(api: SpheroEduAPI, segments_cm, headings, cmps: float, speed_pct: int):
     api.set_stabilization(True)
@@ -82,7 +78,7 @@ def run_lap(api: SpheroEduAPI, segments_cm, headings, cmps: float, speed_pct: in
         print(f"… {k}")
         api.set_main_led(Color(255,255,0)); time.sleep(0.3)
         api.set_main_led(Color(0,0,0));     time.sleep(0.4)
-    print("🏁 GO!")
+    print("GO!")
     api.set_main_led(LED_RUN)
 
     t0 = time.perf_counter()
@@ -104,17 +100,17 @@ def run_lap(api: SpheroEduAPI, segments_cm, headings, cmps: float, speed_pct: in
 
 def main():
     p = argparse.ArgumentParser(description="Sphero BOLT — Autonome ronde (horaire)")
-    p.add_argument("--name", required=True, help="Nom ou MAC du BOLT (ex: SB-9DD8)")
-    p.add_argument("--speed", type=int, default=SPEED_PCT_DEFAULT, help="Vitesse % (0–100)")
-    p.add_argument("--cmps", type=float, default=CM_PER_SEC_DEFAULT, help="cm/s mesuré à cette vitesse")
+    p.add_argument("--name", required=True, help="Nom du SPHERO (ex: SB-9DD8)")
+    p.add_argument("--speed", type=int, default=SPEED_PCT_DEFAULT, help=" SPEED % (0–100)")
+    p.add_argument("--cmps", type=float, default=CM_PER_SEC_DEFAULT, help="cm/s")
     p.add_argument("--segments", type=str, default=",".join(str(x) for x in SEGMENTS_CM),
-                   help="Segments en cm séparés par des virgules")
+                   help="Segments in cm")
     args = p.parse_args()
 
     segments = [float(x) for x in args.segments.split(",") if x.strip()]
     toy = find_toy(args.name)
     if toy is None:
-        print(f"NO BOLT '{args.name}'")
+        print(f"NO SPHERO '{args.name}'")
         sys.exit(1)
 
     print(f"Connected {toy.name}")
@@ -131,7 +127,7 @@ def main():
                 api.roll(0,0,0.2); api.set_main_led(LED_ERR)
         except Exception:
             pass
-        print("\n STOPED")
+        print("\n STOPPED")
     except Exception as e:
         print(f" Error {e}")
         try:
