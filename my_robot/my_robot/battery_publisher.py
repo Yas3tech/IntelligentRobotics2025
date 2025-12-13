@@ -8,7 +8,7 @@ class BatteryPublisher(Node):
     def __init__(self):
         super().__init__('battery_publisher')
         self.publisher_ = self.create_publisher(Float32, '/battery_voltage', 10)
-        self.timer = self.create_timer(60.0, self.timer_callback)
+        self.timer = self.create_timer(10.0, self.timer_callback)
         self.get_logger().info('BatteryPublisher gestart')
 
     def timer_callback(self):
