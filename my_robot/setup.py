@@ -22,6 +22,9 @@ setup(
         'console_scripts': [
             'battery_publisher = my_robot.battery_publisher:main',
             'battery_monitor = my_robot.battery_monitor:main',
+            'keyboard_publisher = my_robot.keyboard_publisher:main',
+            'cmd_subscriber = my_robot.cmd_subscriber:main',
+            'cmd_subscriber_vel = my_robot.cmd_subscriber_vel:main',
         ],
     },
 )
