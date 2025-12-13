@@ -9,7 +9,7 @@ class BatteryMonitor(Node):
 
     def callback(self, msg):
         if msg.data < 11.5:
-            print(f"Battery low: {msg.data:.2f} V")
+            print(f"WARNING Battery low: {msg.data:.2f} V")
         else:
             print(f"Battery: {msg.data:.2f} V")
 

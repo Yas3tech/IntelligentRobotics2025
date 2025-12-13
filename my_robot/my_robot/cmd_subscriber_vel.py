@@ -21,14 +21,17 @@ class CmdSubscriberVel(Node):
         key = msg.data
 
         if key == 'z':
-            self.left += 5
-            self.right += 5
-        elif key == 's':
             self.left -= 5
             self.right -= 5
-        elif key == 'a':
+        elif key == 's':
             self.left += 5
-            self.right -= 5
+            self.right += 5
+        elif key == 'a':
+            self.left -= 5
+            self.right += 5
+        elif key == 'e':
+            self.left +=5
+            self.right -=5
         elif key == 'x':
             self.left = 0
             self.right = 0

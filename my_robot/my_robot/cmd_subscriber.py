@@ -6,48 +6,26 @@ import serial
 class CmdSubscriber(Node):
     def __init__(self):
         super().__init__('cmd_subscriber')
-
-
         self.ser = serial.Serial('/dev/ttyACM0', 57600, timeout=0.1)
-
-
-        self.left_speed = 0
-        self.right_speed = 0
-
         self.create_subscription(String, 'key_cmd', self.callback, 10)
-
-    def send_velocity(self):
-        cmd = f"V {self.left_speed} {self.right_speed}\n"
-        self.ser.write(cmd.encode())
-        print("send:", cmd.strip())
 
     def callback(self, msg):
         key = msg.data
 
-        if key == 'z':
-            self.left_speed += 5
-            self.right_speed += 5
-
-        elif key == 's':
-
-            self.left_speed -= 5
-            self.right_speed -= 5
-
-        elif key == 'a':
-
-            self.left_speed += 5
-            self.right_speed -= 5
-
-        elif key == 'x':
-
-            self.left_speed = 0
-            self.right_speed = 0
-
+        if key == 'z':        # forward
+            cmd = "V -50 -50\n"
+        elif key == 's':      # backward
+            cmd = "V 50 50\n"
+        elif key == 'a':      # left
+            cmd = "V 50 -50\n"
+        elif key == 'e':      # right
+            cmd = "V -50 50\n"
+        elif key == 'x':      # stop
+            cmd = "V 0 0\n"
         else:
-
             return
 
-        self.send_velocity()
+        self.ser.write(cmd.encode())
 
 def main():
     rclpy.init()
@@ -57,3 +35,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
