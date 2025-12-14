@@ -4,10 +4,10 @@ from std_msgs.msg import String
 import serial
 
 KEYMAP = {
-    'z': "D 50 50 1",     # forward
-    'a': "D 50 -50 1",    # left
-    'e': "D -50 50 1",    # right
-    's': "D -50 -50 1",   # backward
+    'z': "D -50 -50 1",     # forward
+    'a': "D -50 50 1",    # left
+    'e': "D 50 -50 1",    # right
+    's': "D 50 50 1",   # backward
 }
 
 class CmdSubscriber(Node):
