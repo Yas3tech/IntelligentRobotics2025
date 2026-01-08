@@ -6,13 +6,18 @@ class KeyboardPublisher(Node):
     def __init__(self):
         super().__init__('keyboard_publisher')
         self.pub = self.create_publisher(String, 'key_cmd', 10)
-        print("z=forward, s=backward, a=left, e=right, q=quit")
+        print("z=forward, s=backward, a=left, e=right, x=stop, q=quit")
 
     def run(self):
         while rclpy.ok():
             key = input("> ")
+
             if key == "q":
+                msg = String()
+                msg.data = "x"
+                self.pub.publish(msg)
                 break
+
             msg = String()
             msg.data = key
             self.pub.publish(msg)
